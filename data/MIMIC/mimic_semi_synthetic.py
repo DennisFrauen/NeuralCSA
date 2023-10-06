@@ -18,14 +18,6 @@ def real_world_data(config_data):
     # Impute missing values
     Y[np.isnan(Y)] = np.nanmedian(Y)
 
-    # Standardize outcomes
-    #y_mean_1 = np.mean(Y[:, 0])
-    #y_std_1 = np.std(Y[:, 0])
-    #y_mean_2 = np.mean(Y[:, 1])
-    #y_std_2 = np.std(Y[:, 1])
-    #Y[:, 0] = (Y[:, 0] - y_mean_1) / y_std_1
-    #Y[:, 1] = (Y[:, 1] - y_mean_2) / y_std_2
-
     # Shuffle
     idx = np.random.permutation(X.shape[0])
     X = X[idx, :]
@@ -59,10 +51,6 @@ def real_world_data(config_data):
 
 def semi_synthetic_data(config_data):
     X, A, _, prop_obs, _ = extract_mimic_data(config_data)
-    # Remove individuals with overlap violations
-    #overlap_idx = (prop_obs < 0.3) | (prop_obs > 0.7)
-    #X = X[~overlap_idx[:, 0], :]
-    #prop_obs = prop_obs[~overlap_idx[:, 0], :]
     # Uniform hidden confounding
     U = np.random.uniform(0, 1, size=(X.shape[0], 1))
 
@@ -72,20 +60,6 @@ def semi_synthetic_data(config_data):
     # Sample synthetic treatments (follows observationa distribution
     A_syn = np.random.binomial(1, w * prop_obs, size=(X.shape[0], 1))
 
-    # Check that w integrates to 1
-    #U_t = np.transpose(U, axes=(1, 0))
-    #w_test = np.where(gamma >= 2 - (1/prop_obs), gamma + U_t * 2 * (1 - gamma),  2 - (1/prop_obs) + U_t * 2 * (1/prop_obs - 1))
-    #w_test_integrated = np.mean(w_test, axis=1, keepdims=True)
-    # Check that full propensity is between 0 and 1
-    #prop_full = w * prop_obs
-
-    # Sample synthetic outcomes ----------------------------
-    # First binarize U
-    #U_bin = np.where(U > 0.5, 1, 0)
-    #U_lognorm = np.exp(norm.ppf(U)) - np.exp(1/2)
-    #X_mean = np.mean(X, axis=1, keepdims=True)
-    #Y_1_mean = (1) * X_mean + (1) - 2 * np.sin(2 * (1) * X_mean) - 2 * (2 * U_bin - 1) * (1 + 0.5 * X_mean)
-    #Y_0_mean = (- 1) * X_mean + (- 1) - 2 * np.sin(2 * (- 1) * X_mean) + 2 * (2 * U_bin - 1) * (1 + 0.5 * X_mean)
     XU_mean = np.mean(np.concatenate([X, U - 0.5], axis=1), axis=1, keepdims=True)
     Y_1_mean = XU_mean
     Y_0_mean = - XU_mean
@@ -111,8 +85,6 @@ def semi_synthetic_data(config_data):
     w = np.where(gamma >= 2 - (1 / prop_obs), gamma + U * 2 * (1 - gamma),
                  2 - (1 / prop_obs) + U * 2 * (1 / prop_obs - 1))
     prop_full = w * prop_obs
-    # Check if w sums to 1
-    #w_integrated = np.mean(w, axis=1, keepdims=True)
     odds_ratio = (prop_obs / (1 - prop_obs)) / (prop_full / (1 - prop_full))
     odds_ratio_inv = 1 / odds_ratio
     # MSM
@@ -215,9 +187,6 @@ def semi_synthetic_data(config_data):
     d_val = CausalDataset(x=X_val, a=A_val, y=Y_val, propensity=prop_obs_val, gammas=gammas_val)
     d_test = CausalDataset(x=X_test, a=A_test, y=Y_test, propensity=prop_obs_test, gammas=gammas_test)
 
-    # Compute quantile sensitivity parameters
-    q = 0.5
-    overlap_idx = (prop_obs_test < 0.3) | (prop_obs_test > 0.7)
     return [d_train, d_val, d_test, Y_1_test, Y_0_test, y_mean, y_std]
 
 
@@ -243,11 +212,6 @@ def extract_mimic_data(config_data):
         else:
             column_names_vitals.append(column[0])
     all_vitals.columns = column_names_vitals
-
-    # Filling NA
-    #all_vitals = all_vitals.fillna(method='ffill')
-    #all_vitals = all_vitals.fillna(method='bfill')
-
 
     # Filtering out users with time length < necissary time length
     user_sizes = all_vitals.groupby('subject_id').size()
@@ -353,18 +317,6 @@ def extract_mimic_data(config_data):
         vitals_pretreat[column] = (vitals_pretreat[column] - mean) / std
         vitals_out[column] = (vitals_out[column] - mean) / std
         std_information[column] = [mean, std]
-    # Cut off > T
-    #all_vitals = all_vitals.groupby('subject_id').head(T)
-
-    #vitals_grouped = all_vitals.groupby('subject_id')
-    #data_vitals = np.zeros((n, T, len(vital_list)))
-    #for i, cov in enumerate(vitals_grouped):
-    #    test = cov[1].to_numpy()
-    #    for t in range(T):
-    #        data_vitals[i, t, :] = test[t, :]
-
-    # Standardize
-    #data_vitals = helpers.standardize_covariates(data_vitals)
 
     # concat static features, vitals and treatments pre-treatment
     X = pd.concat([static_features, vitals_pretreat], axis=1, join="inner")
@@ -388,8 +340,6 @@ def extract_mimic_data(config_data):
     idx_val = idx[n_train:]
     X_full_train = X_full[idx_train, :]
     X_full_val = X_full[idx_val, :]
-    #X_obs_train = X_obs[idx_train, :]
-    #X_obs_val = X_obs[idx_val, :]
     A_train = A_full[idx_train, :]
     A_val = A_full[idx_val, :]
     Y_train = Y_full[idx_train, :]
@@ -397,33 +347,21 @@ def extract_mimic_data(config_data):
     # Causal datasets
     d_full_train = CausalDataset(x=X_full_train, a=A_train, y=Y_train)
     d_full_val = CausalDataset(x=X_full_val, a=A_val, y=Y_val)
-    #d_obs_train = CausalDataset(x=X_obs_train, a=A_train, y=Y_train)
-    #d_obs_val = CausalDataset(x=X_obs_val, a=A_val, y=Y_val)
-    #d_full = CausalDataset(x=X, a=A, y=Y)
 
     # Configuration for propensity nets
     # Base config for propensity
     data_dims_full = d_full_train.get_dims(["x", "a", "y"])
     config_full = {"dim_input": data_dims_full["x"], "dim_output": data_dims_full["a"],
                    "out_type": "discrete", "neptune": True} | utils.load_yaml("/data/MIMIC/propensity")
-    #data_dims_obs = d_obs_train.get_dims(["x", "a", "y"])
-    #config_obs = {"dim_input": data_dims_obs["x"], "dim_output": data_dims_obs["a"],
-    #                "out_type": "discrete", "neptune": True} | utils.load_yaml("/data/MIMIC/propensity")
     # Train NN for full and observed propensity
     propensity_net_full = PropensityNet(config_full)
     #propensity_net_obs = PropensityNet(config_obs)
     if config_data["train_propensities"]:
         propensity_net_full.fit(d_full_train, d_full_val, name="propensity_full")
-        #propensity_net_obs.fit(d_obs_train, d_obs_val, name="propensity_obs")
         utils.save_pytorch_model("/data/MIMIC/propensity_full", propensity_net_full)
-        #utils.save_pytorch_model("/data/MIMIC/propensity_obs", propensity_net_obs)
     else:
         propensity_net_full = utils.load_pytorch_model("/data/MIMIC/propensity_full", propensity_net_full)
-        #propensity_net_obs = utils.load_pytorch_model("/data/MIMIC/propensity_obs", propensity_net_obs)
 
     # Predictions
-    # convert X_full to tensor
     propensity_full_pred = propensity_net_full.predict(torch.tensor(X_full, dtype=torch.float)).detach().numpy()
-    #propensity_obs_pred = propensity_net_obs.predict(torch.tensor(X_obs, dtype=torch.float)).detach().numpy()
-    #odds_ratio = (propensity_obs_pred / (1 - propensity_obs_pred)) / (propensity_full_pred / (1 - propensity_full_pred))
     return X_full, A_full, Y_full, propensity_full_pred, std_information
