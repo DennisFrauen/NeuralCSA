@@ -17,17 +17,11 @@ The project is build with python 3.10 and uses the packages listed in the file `
 
 #### Reproducing the experiments
 The scripts running the experiments are contained in the `/experiments` folder. Each experimental setting is contained within its own subfolder. These are:
-- `/exp_real`: real-world data
-- `/exp_sim_binary`: binary treatment, no mediators
-- `/exp_sim_binary_m1`: binary treatment, one mediator
-- `/exp_sim_binary_2`: binary treatment, two mediators
-- `/exp_sim_continuous`: continuous treatment, no mediators
-- `/exp_sim_continuous_m1`: continuous treatment, one mediator
-- `/exp_sim_continuous_m2`: continuous treatment, two mediators
-- `/exp_sim_continuous_weight`: continuous treatment, no mediators, weighed GMSM experiment (Table 1).
+- `/real_world`: real-world data (Figure 7)
+- `/semi_synthetic`: semi-synthetic data (Table 2, Figure 6)
+- `/sim_binary_1D`: binary treatment, comparison with CF bounds for MSM (Figure 4, left)
+- `/sim_binary_1D_f`: binary treatment, bounds for different sensitivity models (Figure 5, left)
+- `/sim_continuous_1D`: continuous treatment, comparison with CF bounds for MSM (Figure 4, right)
+- `/sim_continuous_1D_f`: continuous treatment, bounds for different sensitivity models (Figure 5, right)
 
-The files *run.py* and *run_quatile.py* execute the experiments. Configuration settings are in *config.yaml*. By default, the pretrained models in the `/saved_models` will be used to estimate bounds. For model training, the parameter *train_models* in *config.yaml* can be changed to *True*.
-
-
-#### Reproducing hyperparameter tuning
-The code for hyperparameter tuning is contained in the `/hyperparams` folder. As for the `/experiments` folder, each experimental setting is contained within its own subfolder. The optimal hyperparameters are stored as `.yaml` files in the `/params` subfolder. Hyperparameter tuning may be executed via *run.py*.
+The file *run.py* executes the experiments. Configuration settings are in *config.yaml*. By default, the pretrained models in the `/saved_models` will be used to estimate bounds. For model training, the parameters *train_propensity*, *train_stage1*, and *train_stage2_all*  in *config.yaml* can be changed to *True*.
