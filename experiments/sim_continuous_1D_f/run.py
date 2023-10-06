@@ -1,11 +1,6 @@
-import os
-import sys
-#main_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-#sys.path.append(main_dir)
 import utils.utils as utils  # Import module
 from experiments.main import run_experiment
 import numpy as np
-import utils.plotting as plotting
 import torch
 from data.data_structures import CausalDataset
 import seaborn as sns
@@ -31,15 +26,6 @@ def exp_function(config_run, datasets, joint_model, run):
 
     return {"cate_upper": cate_upper, "cate_lower": cate_lower, "cmsm_bounds_upper": msm_bounds_upper,
             "cmsm_bounds_lower": msm_bounds_lower}
-
-
-    # Propensity fit
-    #plotting.plot_propensity_fit(scm, joint_model)
-    # Plot CATE and bounds
-    #plotting.plot_1d_CATE_f(joint_model, scm, a1=0.5, a2=None, l=-1, r=1, stepsize=0.01, gmsm_bounds=True, bound_type=config_run["bounds"],
-    #                             path="/experiments/sim_continuous_1D_f/results/plot_continuous_1D_f.pdf", legend=True, gmsm_type="cmsm",
-    #                        gmsm_gamma=3.15)
-    #plotting.plot_sensitivity_value(scm, "tv_continuous", a=0.9, l=-0.7, r=0.7, stepsize=0.01)
 
 def end_function(config_run, results, scm=None):
     n_samples = config_run["monte_carlo_samples"]
@@ -85,10 +71,6 @@ def end_function(config_run, results, scm=None):
         sns.lineplot(x=x.squeeze(), y=upper_mean[i, :].squeeze(), label=labels[i],
                      color=line_color, linewidth=1, linestyle="dashed")
         sns.lineplot(x=x.squeeze(), y=lower_mean[i, :].squeeze().squeeze(), color=line_color, linewidth=1, linestyle="dashed")
-        #sns.lineplot(x=x.squeeze(), y=upper_mean_gmsm[i, :].squeeze(), label=fr"CF $\Gamma = {gammas[i]}$",
-        #             color=line_color)
-        #sns.lineplot(x=x.squeeze(), y=lower_mean_gmsm[i, :].squeeze(), color=line_color)
-
         # Add shaded areas for standard deviation
         plt.fill_between(x.squeeze(), upper_mean[i, :].squeeze() + upper_std[i, :].squeeze(),
                          upper_mean[i, :].squeeze() - upper_std[i, :].squeeze(), alpha=0.2, color=line_color)

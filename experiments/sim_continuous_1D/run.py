@@ -1,12 +1,6 @@
-import os
-import sys
-#main_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-#sys.path.append(main_dir)
 import utils.utils as utils  # Import module
 from experiments.main import run_experiment
 import numpy as np
-import utils.plotting as plotting
-import torch
 from data.data_structures import CausalDataset
 import seaborn as sns
 import matplotlib.pyplot as plt

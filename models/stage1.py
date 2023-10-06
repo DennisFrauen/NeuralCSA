@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 import torch
 import pyro.distributions as dist
 import pyro.distributions.transforms as T
-from pyro.nn import ConditionalAutoRegressiveNN, AutoRegressiveNN
+from pyro.nn import ConditionalAutoRegressiveNN
 from abc import ABC, abstractmethod
 import utils.utils as utils
 

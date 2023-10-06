@@ -10,7 +10,8 @@ from data.data_structures import CausalDataset
 
 def run_experiment(config_run, exp_function, end_function=None):
     if config_run["run"]["validation"]:
-        wandb.login(key="f2a65b64221c6eda048b770aa5a599e538934e2a")
+        # Initialize weights and biases if used
+        pass
     seed = config_run["run"]["seed"]
     result_path = utils.get_project_path() + "/experiments/" + config_run["run"]["name"] + "/results/"
     results = []
@@ -79,8 +80,6 @@ def get_models(config_run, config_models, datasets, run=0, seed=0):
         else:
             data_test = datasets["d_train"]
         joint_model.fit_stage2(data_test, seed=seed, savepath=savepath + "stage2/")
-        #if config_run["save_stage2_all"]:
-        #    joint_model.save_stage2(savepath + "stage2/")
     else:
         print("Loading stage 2 models")
         joint_model.load_stage2(savepath + "stage2/")
@@ -130,9 +129,3 @@ def create_config(config_run, datasets):
     model_config = {"propensity": config_propensity, "stage1": config_stage1, "stage2_upper": config_stage2_upper, "stage2_lower": config_stage2_lower}
     return model_config
 
-# def save_scale_params(gmsm, savepath):
-#    scaling_params = gmsm.scaling_params.copy()
-#    if torch.is_tensor(scaling_params["mean"]):
-#        scaling_params["mean"] = scaling_params["mean"].item()
-#        scaling_params["sd"] = scaling_params["sd"].item()
-#    utils.save_yaml(savepath, scaling_params)

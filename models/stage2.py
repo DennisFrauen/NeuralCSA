@@ -138,22 +138,6 @@ class Stage2(pl.LightningModule, ABC):
         query = self.causal_query.compute_query_test(y_samples_shifted)
         if data_test.data["x"].size(0) == 1:
             query = torch.unsqueeze(query, dim=0)
-
-        #context_a = context[:, -1:]
-        #context_x = context[:, :-1]
-        #u_sampled = self.dist_base.sample(torch.Size([n_samples, n_batch]))
-        # If treatment is discrete, sample bernoulli from propensity scores (account for data constraints in left supremum)
-        #propensities = self.trained_models["propensity"].predict(context_x).detach()
-        #propensities_a = context_a * propensities + (1 - context_a) * (1 - propensities)
-        #p_a_x = propensities_a.transpose(0, 1).expand(n_samples, n_batch)
-        #xi_sampled = torch.bernoulli(p_a_x).unsqueeze(dim=2).expand(n_samples, n_batch,
-        #                                                            u_sampled.size(2))
-        #transform_stage2 = self.transform.condition(context)
-        #transform_stage1 = self.trained_models["stage1"].transform.condition(context)
-        #u_shifted = transform_stage2(u_sampled)
-        #u_shifted = (1 - xi_sampled) * u_shifted + xi_sampled * u_sampled
-        #y_sampled = transform_stage1(u_shifted)
-        #query = torch.mean(y_sampled, dim=(0, 2))
         return query.detach().unsqueeze(dim=1)
 
     def test_sensitivity_violation(self, data_test, n_samples):
@@ -271,8 +255,6 @@ class ConditionalMixtureSameFamily(dist.ConditionalDistribution):
         cat_dist = Categorical(probs=torch.concat([propensities_a, 1 - propensities_a], dim=1))
         comps = StackedDistribution([self.dist_base, self.dist_shifted.condition(context)], batch_shape=context.shape[0], condition_shape=context.shape[0])
         return MixtureSameFamily(cat_dist, Independent(comps, 0))
-        #transf_mixture = TransformedDistribution(mixture, [transforms])
-
     def clear_cache(self):
         pass
 
@@ -304,9 +286,6 @@ class CNF_stage2(Stage2):
                                                               [self.trained_models["stage1"].transform])
         # Optimizer
         self.optimizer = torch.optim.Adam(self.transform.parameters(), lr=config["lr"])
-
-
-
 
     def on_train_batch_end(self, outputs, batch, batch_idx):
         self.dist_shifted.clear_cache()

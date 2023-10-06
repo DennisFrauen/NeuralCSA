@@ -41,14 +41,4 @@ run:
   sensitivity_models:
     - name: "msm"
       gammas: [2, 4]
-    #- name: "kl_binary"
-    #  gammas: [0.25]
-    #- name: "tv_binary"
-    #  gammas: [0.38]
-    #- name: "hellinger_binary"
-    #  gammas: [0.18]
-    #- name: "chisquared_binary"
-    #  gammas: [0.68]
-    #- name: "rosenbaum_binary"
-    #  gammas: [14.42]
 

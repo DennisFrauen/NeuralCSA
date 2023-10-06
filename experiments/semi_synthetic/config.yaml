@@ -13,10 +13,6 @@ data:
     - glucose
     - hematocrit
     - respiratory rate
-    #- prothrombin time pt
-    #- hemoglobin
-    #- creatinine
-    #- blood urea nitrogen
   static_cov:
     - gender
     - age
@@ -27,7 +23,6 @@ data:
     - glucose
     - hematocrit
     - respiratory rate
-    - prothrombin time pt
 run:
   name: "semi_synthetic"
   seed: 0

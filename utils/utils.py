@@ -83,7 +83,7 @@ def mse_bce(y, y_hat, y_type="continuous"):
 def fit_model(model, d_train, d_val=None, name=""):
     epochs = model.config["epochs"]
     batch_size = model.config["batch_size"]
-    logger = get_logger(model.config["neptune"], name=name)
+    logger = get_logger(False, name=name)
     trainer = pl.Trainer(max_epochs=epochs, enable_progress_bar=False, enable_model_summary=False,
                          accelerator="auto", logger=logger, enable_checkpointing=False)
 

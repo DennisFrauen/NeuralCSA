@@ -9,10 +9,6 @@ import numpy as np
 
 class JointModel:
 
-    # config is dictionary with keys: "stage1", "stage2", "propensity"
-    # "stage1" is config for stage 1 model
-    # "propensity" is config for propensity model (optional)
-    # "stage2" is a list with all stage 2 models
     def __init__(self, config):
         self.config = config
         # Stage 1
@@ -402,26 +398,6 @@ class SensitivityModel:
             return self.gamma - torch.transpose(torch.maximum(prod_max, prod_min), 0, 1)
         elif self.name == "rosenbaum_continuous":
             raise NotImplementedError("Rosenbaum continuous not implemented")
-            #u_shifted = transform2(u_sampled)
-            #p_u_x = dist_shifted.log_prob(u_shifted).exp()
-            #p_u_xa = dist_base.log_prob(u_shifted).exp()
-            #p_u_x_ex = p_u_x.unsqueeze(1)  # Shape: (n, 1, p)
-            #p_u_xa_ex = p_u_xa.unsqueeze(0)  # Shape (1, n, p)
-            #ratio = p_u_x_ex / p_u_xa_ex  # Shape (n, n, p), all possible combinations of products
-            # maximize over first two dimensions
-            #prod_max = torch.max(torch.max(ratio, dim=0)[0], dim=0, keepdim=True)[0]
-            #prod_min = torch.max(torch.max(1 / ratio, dim=0)[0], dim=0, keepdim=True)[0]
-            #return self.gamma - torch.transpose(torch.maximum(prod_max, prod_min), 0, 1)
-            #u_shifted = transform2(u_sampled)
-            #p_u_x = dist_shifted.log_prob(u_shifted).exp()
-            #p_u_xa = dist_base.log_prob(u_shifted).exp()
-            #p_u_x_ex = p_u_x.unsqueeze(1)  # Shape: (n, 1, p)
-            #p_u_xa_ex = p_u_xa.unsqueeze(0)  # Shape (1, n, p)
-            #ratio = p_u_x_ex / p_u_xa_ex  # Shape (n, n, p), all possible combinations of products
-             #maximize over first two dimensions
-            #prod_max = torch.logsumexp(torch.logsumexp(ratio, dim=0), dim=0, keepdim=True)
-            #prod_min = torch.logsumexp(torch.logsumexp(1 / ratio, dim=0), dim=0, keepdim=True)
-            #return self.gamma - torch.transpose(torch.maximum(prod_max, prod_min), 0, 1)
         else:
             p_u_x = dist_shifted.log_prob(u_sampled).exp()
             p_u_xa = dist_base.log_prob(u_sampled).exp()
@@ -544,9 +520,6 @@ class CausalQuery:
         else:
             raise ValueError("Unknown causal query")
 
-    # y_sampled is of shape (n_samples, n_data, d_y)
-    # dist_y is a ConditionalTransformedDistribution
-    # context is of shape (n_data, d_context)
     def compute_query_train(self, u_sampled, xi_sampled, dist_y_shifted, transform1, transform2):
         return self.query_computation_train(u_sampled, xi_sampled, dist_y_shifted, transform1, transform2)
 
@@ -588,36 +561,5 @@ class CausalQuery:
                             torch.zeros((y_samples_shifted.size(0), y_samples_shifted.size(1)))).detach()
         return torch.squeeze(torch.mean(y_idx, dim=0))
 
-    def probability_distance_train(self, u_sampled, xi_sampled, dist_y_shifted, transform1, transform2):
-        y_sampled = transform1(u_sampled)
-        projected_y_outside = torch.where(y_sampled < self.boundary_lower, self.boundary_lower,
-                                          torch.where(y_sampled > self.boundary_upper, self.boundary_upper, y_sampled))
 
-        dist_outside = torch.sum(torch.abs(projected_y_outside - y_sampled), dim=2)
-        dist_outside = dist_outside / torch.sum(dist_outside)
 
-        idx_lower = (y_sampled >= self.boundary_lower).all(dim=2)
-        idx_upper = (y_sampled <= self.boundary_upper).all(dim=2)
-        idx_inside = idx_lower & idx_upper
-
-        weights = torch.where(idx_inside, torch.ones(idx_inside.size()), -dist_outside).detach()
-
-        log_prob = dist_y_shifted.log_prob(y_sampled)
-        obj = log_prob * weights
-        return torch.squeeze(torch.mean(obj))
-
-        # idx_inside_0 = (self.boundary_lower[0] <= y_sampled[:, :, 0]) & (y_sampled[:, :, 0] <= self.boundary_upper[0])
-        # idx_inside_1 = (self.boundary_lower[1] <= y_sampled[:, :, 1]) & (y_sampled[:, :, 1] <= self.boundary_upper[1])
-        # idx_right = idx_inside_1 & (self.boundary_upper[0] < y_sampled[:, :, 0])
-        # idx_left = idx_inside_1 & (self.boundary_lower[0] > y_sampled[:, :, 0])
-        # idx_top = idx_inside_0 & (self.boundary_upper[1] < y_sampled[:, :, 1])
-        # idx_bottom = idx_inside_0 & (self.boundary_lower[1] > y_sampled[:, :, 1])
-        # idx_top_right = idx_top & idx_right
-
-        # y_signs = torch.where(conditions_met.all(dim=2), torch.ones((y_sampled.size(0), y_sampled.size(1))),
-        #                      -torch.ones((y_sampled.size(0), y_sampled.size(1)))).detach()
-
-        # idx_inside =
-        # obj = log_prob * y_signs
-        # obj = torch.where(idx_inside, torch.ones(idx_inside.size()), torch.zeros(idx_inside.size()))
-        # return torch.squeeze(torch.mean(obj))

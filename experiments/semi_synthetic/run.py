@@ -1,12 +1,6 @@
-import copy
-import os
-import sys
-# main_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# sys.path.append(main_dir)
 import utils.utils as utils  # Import module
 from experiments.main import run_experiment
 import numpy as np
-import utils.plotting as plotting
 import torch
 from data.data_structures import CausalDataset
 import seaborn as sns
@@ -76,14 +70,6 @@ def exp_function(config_run, datasets, joint_model, run=None):
         # Legend to lower left
         plt.legend(loc="upper left").set_visible(True)
         plt.show()
-    #x_test_density = x_test[0:1, :]
-    #data_test = CausalDataset(x=x_test_density, a=np.full((1, 1), 1), y=None)
-    #y_grid = np.expand_dims(np.arange(-3, 3, 0.05), 1)
-    #stage1 = joint_model.stage1.test_likelihood(data_test=data_test, y=torch.tensor(y_grid, dtype=torch.float32)).detach().numpy()
-    #stage2 = []
-    #for i in range(len(joint_model.stage2_lower)):
-    #    stage2.append(joint_model.stage2_lower[i].test_likelihood(data_test=data_test,
-    #                                                              y=torch.tensor(y_grid, dtype=torch.float32)).detach().numpy())
 
     return {"coverage": coverage, "lengths": lengths}#, "density_stage1": stage1, "density_stage2": stage2}
 
@@ -91,17 +77,10 @@ def exp_function(config_run, datasets, joint_model, run=None):
 def end_function(config_run, results, scm=None):
     results_coverage = [result["coverage"] for result in results]
     results_lengths = [result["lengths"] for result in results]
-    # Set Nan for failed run (Rosenbaum, run 2)
-    #results_coverage_msm = [result["coverage_msm"] for result in results]
-    #results_length_msm = [result["length_msm"] for result in results]
     coverage_mean = np.nanmean(results_coverage, axis=0).squeeze()
     coverage_std = np.nanstd(results_coverage, axis=0).squeeze()
     lengths_mean = np.nanmean(results_lengths, axis=0).squeeze()
     lengths_std = np.nanstd(results_lengths, axis=0).squeeze()
-    #coverage_msm_mean = np.nanmean(results_coverage_msm, axis=0).squeeze()
-    #coverage_msm_std = np.nanstd(results_coverage_msm, axis=0).squeeze()
-    #length_msm_mean = np.nanmean(results_length_msm, axis=0).squeeze()
-    #length_msm_std = np.nanstd(results_length_msm, axis=0).squeeze()
     print("Coverage mean: " + str(coverage_mean))
     print("Coverage std: " + str(coverage_std))
     print("Lengths mean: " + str(lengths_mean))

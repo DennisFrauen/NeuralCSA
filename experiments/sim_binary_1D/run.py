@@ -13,11 +13,6 @@ import matplotlib.pyplot as plt
 
 def exp_function(config_run, datasets, joint_model, run):
 
-    # Propensity fit
-    #plotting.plot_propensity_fit(scm, joint_model)
-    # Plot CATE and bounds
-    #plotting.plot_1d_CATE_GMSM(joint_model, scm, a1=1, a2=0, l=-0.7, r=0.7, stepsize=0.01, gmsm_bounds=True, bound_type=config_run["bounds"], legend=True,
-    #                             path="/experiments/sim_binary_1D/results/plot_binary_1D.pdf")
     n_samples = config_run["monte_carlo_samples"]
     x = np.expand_dims(np.arange(-0.7, 0.7, 0.01), 1)
     data_test_a1 = CausalDataset(x=x, a=np.full((x.shape[0], 1), 1), y=None)

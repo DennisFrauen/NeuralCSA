@@ -138,12 +138,6 @@ class CausalDataset(Dataset):
     def __unscale_vector(data, m, sd):
         return (data * sd) + m
 
-    #def get_bootstrapped_dataset(self, n_samples):
-      #  n = self.data["x"].size(0)
-        #idx = np.random.choice(n, n_samples, replace=True)
-        #return CausalDataset(x=self.data["x"][idx].detach().numpy(), a=self.data["a"][idx].detach().numpy(),
-        #                   y=self.data["y"].detach().numpy(), x_type=self.datatypes["x_type"], a_type=self.datatypes["a_type"])
-
 
 
 #Dataset used to train pytorch saved_models

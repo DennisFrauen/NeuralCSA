@@ -129,10 +129,6 @@ class SCM_binary(SCM):
         cov2 = torch.tensor([[1.0, -0.7], [-0.7, 1.0]])
         noise1 = dist.MultivariateNormal(mean, cov1).sample((x.shape[0],))
         noise2 = dist.MultivariateNormal(mean, cov2).sample((x.shape[0],))
-
-        # Sample from the distribution
-        # noise1 = np.random.multivariate_normal([0, 0], cov1)
-        # noise2 = np.random.multivariate_normal([0, 0], cov2)
         # Sample y
         y = mu + noise1.numpy() * u + noise2.numpy() * (1 - u)
         return y
