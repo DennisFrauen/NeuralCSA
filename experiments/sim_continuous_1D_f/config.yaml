@@ -1,0 +1,39 @@
+data:
+  name: "sim_continuous_1D_f"
+  n_train: 10000
+  n_val: 1000
+  d_x: 1
+  d_a: 1
+  d_y: 2
+  coef_u: 3
+run:
+  name: "sim_continuous_1D_f"
+  seed: 0
+  train_propensity: False
+  train_stage1: False
+  train_stage2_all: False
+  save_stage1: True
+  save_stage2_all: True
+  bounds: "both"               # "upper", "lower", "both"
+  validation: True
+  plotting: False
+  scale_y: False
+  n_bootstrap: 0 # number of bootstrap samples, 0 means no bootstrap, i.e., single model trained on whole dataset
+  resample: False  # whether to resample the data for each bootstrap sample, if false use the original data
+  n_runs: 5 # number of runs with different random seeds
+  run_start_index: 1 # index of first run, used to continue runs
+  monte_carlo_samples: 30000 # number of samples to use for calculating test queries
+  # Queries/ sensitivity models to determine which stage 2 models to train/ load
+  queries:
+    - name: "expectation"
+  sensitivity_models:
+    - name: "kl_continuous"
+      gammas: [0.54]
+    - name: "tv_continuous"
+      gammas: [0.29]
+    - name: "hellinger_continuous"
+      gammas: [ 0.12 ]
+    - name: "chisquared_continuous"
+      gammas: [ 0.89 ]
+
+

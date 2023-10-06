@@ -1,0 +1,65 @@
+data:
+  name: "semi_synthetic"
+  cov_window: 10
+  treat_window: 10
+  out_window: 5
+  gamma: 0.25
+  train_propensities: False
+  validation: False
+  dynamic_cov:
+    - heart rate
+    - sodium
+    - mean blood pressure
+    - glucose
+    - hematocrit
+    - respiratory rate
+    #- prothrombin time pt
+    #- hemoglobin
+    #- creatinine
+    #- blood urea nitrogen
+  static_cov:
+    - gender
+    - age
+  hidden_conf:
+    - heart rate
+    - sodium
+    - mean blood pressure
+    - glucose
+    - hematocrit
+    - respiratory rate
+    - prothrombin time pt
+run:
+  name: "semi_synthetic"
+  seed: 0
+  train_propensity: False
+  train_stage1: False
+  train_stage2_all: False
+  save_stage1: True
+  save_stage2_all: True
+  bounds: "both"               # "upper", "lower", "both"
+  validation: True
+  plotting: False
+  scale_y: False
+  n_bootstrap: 0 # number of bootstrap samples, 0 means no bootstrap, i.e., single model trained on whole dataset
+  resample: False  # whether to resample the data for each bootstrap sample, if false use the original data
+  n_runs: 5 # number of runs with different random seeds
+  run_start_index: 1 # index of first run, used to continue runs
+  monte_carlo_samples: 1000 # number of samples to use for calculating test queries
+  # Queries/ sensitivity models to determine which stage 2 models to train/ load
+  queries:
+    - name: "expectation"
+
+  sensitivity_models:
+    - name: "msm"
+      gammas: [5.48]
+    - name: "kl_binary"
+      gammas: [0.25]
+    - name: "tv_binary"
+      gammas: [0.38]
+    - name: "hellinger_binary"
+      gammas: [0.18]
+    - name: "chisquared_binary"
+      gammas: [0.68]
+    - name: "rosenbaum_binary"
+      gammas: [14.42]
+

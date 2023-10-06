@@ -1,0 +1,17 @@
+batch_size: 64
+count_bins: 4
+spline_bound: 3.5
+dim_hidden: 20
+n_samples_train: 100
+epochs: 60
+nested_epochs: 10
+lr: 0.0005
+alpha: 1.8
+lambda_init: 0.01
+mu_init: 0.01
+sensitivity_model:
+  name: "tv_binary"
+  gamma: 0.42
+causal_query:
+  name: "expectation"
+cnf: True

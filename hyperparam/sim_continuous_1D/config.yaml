@@ -1,0 +1,11 @@
+name: "sim_continuous_1D"
+models: ["stage1"]
+seed: 0
+num_samples: 40
+tuning_ranges:
+  stage1:
+    epochs: [50]
+    batch_size: [32, 64, 128]
+    lr: [0.0005, 0.001, 0.005]
+    dim_hidden: [5, 10, 20, 30]
+    count_bins: [2, 4, 8]
