@@ -1,0 +1,72 @@
+data:
+  name: "ihdp"
+  gamma: 0.6
+  beta_u:
+  train_propensities: False
+  validation: True
+  cov_continuous:
+    - bw
+    - b.head
+    - preterm
+    - birth.o
+    - nnhealth
+    - momage
+
+  cov_binary:
+    - sex
+    - twin
+    - mom.lths
+    - mom.hs
+    - mom.scoll
+    - cig
+    - first
+    - booze
+    - drugs
+    - work.dur
+    - prenatal
+    - ark
+    - ein
+    - har
+    - mia
+    - pen
+    - tex
+    - was
+
+  cov_hidden:
+    - b.marr
+
+run:
+  name: "ihdp"
+  seed: 0
+  train_propensity: True
+  train_stage1: True
+  train_stage2_all: False
+  save_stage1: True
+  save_stage2_all: True
+  bounds: "both"               # "upper", "lower", "both"
+  validation: True
+  plotting: False
+  scale_y: False
+  n_bootstrap: 0 # number of bootstrap samples, 0 means no bootstrap, i.e., single model trained on whole dataset
+  resample: False  # whether to resample the data for each bootstrap sample, if false use the original data
+  n_runs: 1 # number of runs with different random seeds
+  run_start_index: 1 # index of first run, used to continue runs
+  monte_carlo_samples: 1000 # number of samples to use for calculating test queries
+  # Queries/ sensitivity models to determine which stage 2 models to train/ load
+  queries:
+    - name: "expectation"
+
+  sensitivity_models:
+    - name: "msm"
+      gammas: [3.48]
+    - name: "kl_binary"
+      gammas: [0.32]
+    - name: "tv_binary"
+      gammas: [0.29]
+    - name: "hellinger_binary"
+      gammas: [0.11]
+    - name: "chisquared_binary"
+      gammas: [0.57]
+    - name: "rosenbaum_binary"
+      gammas: [8.74]
+

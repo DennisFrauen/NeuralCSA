@@ -2,6 +2,7 @@ from data.scms import SCM_binary, SCM_binary_1D, SCM_continuous_1D
 import numpy as np
 import torch
 from data.MIMIC.mimic_semi_synthetic import semi_synthetic_data, real_world_data
+from data.IHDP.data_ihdp import load_data_ihdp
 
 def get_datasets(config_data):
     if config_data["name"] == "sim_binary":
@@ -36,3 +37,8 @@ def get_datasets(config_data):
     if config_data["name"] == "real_world":
         d_train, d_val, d_test, scaling_y = real_world_data(config_data)
         return {"d_train": d_train, "d_val": d_val, "d_test": d_test, "scaling_y": scaling_y}
+
+    if config_data["name"] == "ihdp":
+        d_train, d_val, d_test, Y_1_test, Y_0_test, y_mean, y_std = load_data_ihdp(config_data)
+        return {"d_train": d_train, "d_val": d_val, "d_test": d_test, "Y_1_test": Y_1_test, "Y_0_test": Y_0_test,
+                "y_mean": y_mean, "y_std": y_std}
